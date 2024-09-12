@@ -44,7 +44,7 @@ class FileManager:
 
     def get_folder_info(self, folder_path):
         """
-        Получает информацию о содержимом указанной папки.
+        Получает информацию о содержимом указанной папки или файла.
 
         :param folder_path: Путь к папке.
         :return: Содержимое папки в виде JSON.
@@ -89,7 +89,7 @@ class FileManager:
             with open(local_path, 'rb') as file:
                 response = requests.post(href, files={'file': file})
                 response.raise_for_status()
-                return response.status_code
+                return response
         except (requests.RequestException, IOError) as e:
             print(f"Ошибка при загрузке файла: {e}")
             return None
@@ -152,7 +152,7 @@ class FileManager:
             encoded_path = self.encode_path(file_path)
             response = requests.delete(f"{self.BASE_URL}?path={encoded_path}", headers=self.headers)
             response.raise_for_status()
-            return response.status_code
+            return response
         except requests.RequestException as e:
             print(f"Ошибка при удалении файла: {e}")
             return None

@@ -84,7 +84,7 @@ def run_synchronization():
                 load_path = f"{local_path}/{file_data[0]}"
                 # Отправляем файл на сервер.
                 upload = file_manager.upload_file(href, load_path)
-                if upload == 201:
+                if upload.status_code == 201:
                     logger.info(f"Загрузка файла {file_data[0]} успешно завершена")
                     print(f"Загрузка файла успешно завершена - {file_data[0]}")
                     print("--" * 20)
@@ -106,7 +106,7 @@ def run_synchronization():
                 file = file_delete
                 path_to_delete = f"{cloud_path}/{file[0]}"
                 response = file_manager.delete_file(path_to_delete)
-                if response == 204:
+                if response.status_code == 204:
                     logger.info(f"Удаление файла {file[0]} прошло успешно")
                     print(f"Удаление файла '{file[0]}' прошло успешно\n")
                     print("--" * 20)

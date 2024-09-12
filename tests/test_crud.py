@@ -14,12 +14,6 @@ def is_valid_url(url):
 
 BASE_URL, AUTH_TOKEN = get_url_auth_token()
 
-@pytest.fixture
-def file_manager():
-    base_url = BASE_URL
-    auth_token = AUTH_TOKEN
-    return FileManager(base_url, auth_token)
-
 
 @pytest.mark.parametrize("url", ["https://cloud-api.yandex.net"])
 def test_get(url):
@@ -78,4 +72,14 @@ def test_upload_and_delete_file():
 
     # Отправляем файл на диск.
     upload_file = file_manager.upload_file(upload_link, file_path)
+    assert upload_file.status_code == 201
+
+    # Проверяем наличие файла на диске.
+    file_info = file_manager.get_folder_info(f"{cloud_disk}{file_path}")
+    assert file_info['name'] == file_path
+
+    # Удаляем загруженный файл.
+    delete_file = file_manager.delete_file(f"{cloud_disk}{file_path}")
+    assert delete_file.status_code == 204
+
 
