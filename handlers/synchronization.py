@@ -56,8 +56,11 @@ def run_synchronization():
     try:
         cloud_files = file_manager.get_file_list(cloud_path)
         for folder in cloud_files["_embedded"]["items"]:
-            time_created = folder["custom_properties"]["created"]
-            list_cloud_files.add((folder["name"], time_created))
+            if "custom_properties" in folder:
+                time_created = folder["custom_properties"]["created"]
+                list_cloud_files.add((folder["name"], time_created))
+            else:
+                list_cloud_files.add((folder["name"], ""))
         print(f"Файлы в облаке:")
         for cl_file in list_cloud_files:
             print(cl_file[0])

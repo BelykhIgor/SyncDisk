@@ -50,7 +50,8 @@ class FileManager:
         :return: Содержимое папки в виде JSON.
         """
         try:
-            response = requests.get(f"{self.BASE_URL}?path={folder_path}", headers=self.headers)
+            encoded_path = self.encode_path(folder_path)
+            response = requests.get(f"{self.BASE_URL}?path={encoded_path}", headers=self.headers)
             response.raise_for_status()
             return response.json()
         except requests.RequestException as e:
@@ -93,6 +94,22 @@ class FileManager:
             print(f"Ошибка при загрузке файла: {e}")
             return None
 
+    # Отправляем время создания файла на удаленный диск.
+    def upload_timestamp_file(self, disk_file_path, custom_properties):
+        print(disk_file_path, custom_properties)
+        encoded_path = self.encode_path(disk_file_path)
+        response = requests.patch(
+            f"{self.BASE_URL}?path={encoded_path}",
+            headers={
+                'Authorization': self.headers['Authorization'],
+                'Content-Type': 'application/json'
+            },
+            json={
+                'custom_properties': custom_properties
+            }
+        )
+        return response.status_code
+
     def create_folder(self, path):
         """
         Создает новую папку на Яндекс.Диске.
@@ -103,7 +120,7 @@ class FileManager:
         try:
             response = requests.put(f"{self.BASE_URL}?path={path}", headers=self.headers)
             response.raise_for_status()
-            return response.json()
+            return response
         except requests.RequestException as e:
             print(f"Ошибка при создании папки: {e}")
             return None
@@ -126,7 +143,7 @@ class FileManager:
 
     def delete_file(self, file_path):
         """
-        Удаляет файл на Яндекс.Диске.
+        Удаляет файл или папку на Яндекс.Диске.
 
         :param file_path: Путь к файлу.
         :return: Код статуса HTTP.
